@@ -3,7 +3,7 @@
 
 ## 1. Notebook amb preparació reproduïble i decisions de qualitat
 
-El análisis se realiza sobre una copia de los datos; los CSV originales se conservan intactos. En [el notebook de trabajo](../tests/probes.ipynb) se ordenan las filas por canal, producto, región y mes, se comprueba la cobertura y se crean las particiones temporales.
+El análisis se realiza sobre una copia de los datos; los CSV originales se conservan intactos. El trabajo propio está organizado en dos notebooks: [Semana 1](../tests/semana1.ipynb) y [Semana 2](../tests/semana2.ipynb). Los notebooks de `notebooks/` son materiales guía proporcionados para el proyecto.
 
 Se detectaron estos valores ausentes:
 
@@ -15,9 +15,11 @@ Se detectaron estos valores ausentes:
 | `avg_discount` | 24 | Excluir como predictor del mismo mes porque es un dato observado durante o al finalizarlo. |
 | `website_sessions` | 18 | Excluir como predictor del mismo mes porque el total de visitas se conoce después de transcurrir el mes. |
 
-El notebook todavía contiene un relleno general de nulos con cero sobre la copia de trabajo. Se considera **provisional y no justificado**; no debe interpretarse como decisión final. Las dos referencias de esta semana no necesitan esas columnas.
+Los notebooks propios todavía contienen un relleno general de nulos con cero sobre la copia de trabajo. Se considera **provisional y no justificado**; no debe interpretarse como decisión final. Las dos referencias de esta semana no necesitan esas columnas.
 
-## 2. Tabla de particiones, predictores y resultados de las referencias
+## 2. Particiones, predictores y resultados de las referencias
+
+El enunciado junta tres evidencias en un mismo punto de entrega, pero cumplen funciones distintas: la **tabla de particiones** indica qué meses se usan para entrenar, validar y probar; la **lista de predictores** indica qué columnas se pueden conocer al hacer la predicción. No son la misma tabla ni una se calcula a partir de la otra. Se documentan aquí juntas porque el CP2 pide ambas.
 
 ### Particiones temporales
 
@@ -28,14 +30,20 @@ El notebook todavía contiene un relleno general de nulos con cero sobre la copi
 | Validación | 2025-01 a 2025-12 | 216 | Comparar las referencias. |
 | Prueba reservada | 2026-01 a 2026-06 | 108 | Se guarda para la evaluación final de la semana 5. |
 
-### Predictores según cuándo se conocen
+### Lista de variables admitidas y excluidas
 
-| Decisión | Variables | Motivo |
+Esta tabla responde a otra pregunta: **¿estaría disponible esta variable antes de empezar el mes cuyas ventas queremos anticipar?** Las decisiones temporales siguen las reglas del caso y deben aplicarse igual en entrenamiento y validación.
+
+| Variable | Decisión | Cuándo se conoce y motivo |
 |---|---|---|
-| Admitir | `channel`, `product_line`, `region`, calendario, `marketing_budget`, `planned_discount`, `stock_units`, `list_price` y ventas anteriores de la misma serie. | Se conocen antes del mes, según el documento del proyecto. Los nulos de presupuesto y descuento previsto quedan pendientes de tratamiento justificado. |
-| Excluir | `revenue`, `website_sessions`, `marketing_spend`, `avg_discount`, `closing_stock_units` y `stockout` del mismo mes. | Se conocen durante o después del mes que se quiere predecir. |
-| Objetivo | `sales_units` del mes que se predice. | Es el valor que queremos estimar; no se usa como predictor de ese mismo mes. |
-| Pendiente | `campaign`. | Confirmar en el diccionario si se conoce antes del mes o si describe una campaña ya ejecutada. |
+| `month`, `channel`, `product_line`, `region`, `days_in_month` | Admitir | Calendario y características de la serie conocidos antes del mes. |
+| `stock_units`, `marketing_budget`, `planned_discount`, `list_price` | Admitir, con nulos pendientes de resolver donde corresponda | El diccionario define estos datos como disponibles antes del mes. No se debe asumir que los nulos de presupuesto o descuento previsto significan cero. |
+| Ventas anteriores de la misma serie | Admitir cuando ya estén observadas | Son datos históricos. Para la referencia anual, se usa el mismo mes del año anterior. |
+| `sales_units` del mes que se predice | Objetivo, no predictor | Es el resultado que queremos estimar; usarlo como entrada sería dar al cálculo la respuesta. |
+| `revenue` del mismo mes | Excluir | Se conoce al cerrar el mes y está ligado a la actividad de ventas que queremos anticipar. |
+| `website_sessions` del mismo mes | Excluir | El total se acumula durante el mes y no está disponible antes de que empiece. El CSV también contiene valores para filas `store`, así que no justificamos la exclusión diciendo que solo exista para ecommerce. |
+| `marketing_spend`, `avg_discount`, `closing_stock_units`, `stockout` del mismo mes | Excluir | Son valores observados durante o al finalizar el mes. |
+| `campaign` | Admitir | El diccionario la define como un plan simulado conocido antes del mes. |
 
 ### Referencias medidas en validación
 
@@ -46,7 +54,7 @@ Se compararon la media de ventas 2022–2024 de cada combinación de canal, prod
 | Media histórica por serie | 19,92 | 19,19 % |
 | Mismo mes del año anterior | 18,94 | 18,25 % |
 
-En esta validación, la referencia del mismo mes del año anterior obtiene un error menor: aproximadamente 0,98 unidades menos de MAE y 0,94 puntos porcentuales menos de WAPE. El notebook ya calcula el MAE; el WAPE de esta tabla se calculó con las mismas filas y queda pendiente incorporarlo al notebook para que todo el resultado sea reproducible allí. No se ha evaluado la partición de prueba.
+En esta validación, la referencia del mismo mes del año anterior obtiene un error menor: aproximadamente 0,98 unidades menos de MAE y 0,94 puntos porcentuales menos de WAPE. Las métricas se calculan en el notebook de semana 2 sobre las mismas filas de validación. No se ha evaluado la partición de prueba.
 
 ## 3. Un ejemplo de cómo una variable posterior puede falsear el resultado
 
