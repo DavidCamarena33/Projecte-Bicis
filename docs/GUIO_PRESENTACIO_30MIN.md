@@ -63,4 +63,4 @@ Finalment, vam aplicar el model a les **18 combinacions de juliol de 2026**, gua
 * **Diapositiva 8 · Segmentació K-Means (`k=4`) (~3 min):** Mostrar Figura 4 ampliada, explicar els 4 perfils mitjans (`Estàndard 40%`, `VIP 32,2%`, `Risc 15,9%`, `Inactiu 11,9%`), accions + controls previs, escalat i casos fronterers (`226` i `258`).
 * **Diapositiva 9 · Quadre de Comandament Power BI (~3,5 min):** Mostrar les 2 vistes ampliades (o Power BI en directe filtrant anys/canals).
 * **Diapositiva 10 · Autocrítica: Errors i Solucions (~1,5 min):** Repassar els 4 errors reals del projecte i com es van corregir.
-* **Diapositiva 11 · Recomanacions, Límits i Millores Futures (~2 min):** +25% estoc d'estiu, bloqueig de campanyes sense estoc, cartera VIP, Docker i tests A/B de màrqueting. Tancament i preguntes.
+* **Diapositiva 11 · Recomanacions, Límits i Millores Futures (~2 min):** +25% estoc d'estiu, bloqueig de campanyes sense estoc, cartera VIP, connectar vendes amb clients en el futur i tests A/B de màrqueting. Tancament i preguntes.

@@ -619,28 +619,28 @@
           <h3>Resum dels 4 Perfils (valors mitjans)</h3>
           <table>
             <thead>
-              <tr><th>Perfil (Quota)</th><th>Mitjana grup</th><th>Acció (Control Previ)</th></tr>
+              <tr><th>Perfil (Quota)</th><th>Mitjana grup</th><th>Acció i Finalitat</th></tr>
             </thead>
             <tbody>
               <tr>
                 <td><strong>Estàndard</strong> (40,0%)</td>
                 <td>694 € &middot; 0% dev.</td>
-                <td>Venda creuada d'accessoris (marge/estoc).</td>
+                <td>Oferir accessoris per a pujar el tiquet mitjà.</td>
               </tr>
               <tr>
                 <td><strong>VIP</strong> (32,2%)</td>
                 <td><strong>2.866 €</strong> &middot; 5% dev.</td>
-                <td>Taller gratuït prioritari (capacitat).</td>
+                <td>Enviament gratuït i avantatges VIP per a fidelitzar-los.</td>
               </tr>
               <tr>
                 <td><strong>Risc</strong> (15,9%)</td>
                 <td>687 € &middot; <strong>30% dev.</strong></td>
-                <td>Guies de talles web (causa arrel).</td>
+                <td>Millorar guies de talles per a baixar devolucions.</td>
               </tr>
               <tr>
                 <td><strong>Inactiu</strong> (11,9%)</td>
                 <td>604 € &middot; ~248 dies sense comprar</td>
-                <td>Cupó únic amb caducitat (RGPD).</td>
+                <td>Cupó amb caducitat per a reactivar la compra.</td>
               </tr>
             </tbody>
           </table>
@@ -648,6 +648,10 @@
       </div>
 
       <div class="grid-3" style="margin-top: 10px;">
+        <div class="card info" style="padding: 12px 16px;">
+          <span class="badge green" style="background: #bae6fd; color: #0369a1;">4 Variables clau</span>
+          <p style="margin-top: 6px; font-size: 0.92rem;">Dies (<code>days_since_last_order</code>), comandes (<code>orders_last_12m</code>), despesa (<code>annual_spend</code>) i devolucions (<code>returns_ratio</code>).</p>
+        </div>
         <div class="card highlight" style="padding: 12px 16px;">
           <span class="badge green">Escala justa</span>
           <p style="margin-top: 6px; font-size: 0.92rem;">Igualem unitats (<code>StandardScaler</code>) perquè els euros no tapen la resta.</p>
@@ -655,10 +659,6 @@
         <div class="card warn" style="padding: 12px 16px;">
           <span class="badge amber">Exclosos</span>
           <p style="margin-top: 6px; font-size: 0.92rem;">Sense tiquet mitjà (<code>avg_order_value</code>) ni canal (<code>channel_preference</code>).</p>
-        </div>
-        <div class="card info" style="padding: 12px 16px;">
-          <span class="badge green" style="background: #bae6fd; color: #0369a1;">Zona de dubte</span>
-          <p style="margin-top: 6px; font-size: 0.92rem;"><strong>226</strong> en dies (<code>days_since_last_order</code>) &middot; <strong>258</strong> en dev. (<code>returns_ratio</code>).</p>
         </div>
       </div>
     </section>
@@ -687,27 +687,27 @@
 
       <div class="grid-2">
         <div class="card danger">
-          <h3><span class="badge red">Error 1</span> Omplir nuls amb zero (Setmanes 1–2)</h3>
-          <p><strong>Què passava:</strong> Al principi posàvem <code>0</code> als nuls, fingint despesa zero en clients amb 10 compres o compra feta hui.</p>
-          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Reconstrucció matemàtica (<em>tiquet &times; comandes</em>) i mediana de 44 dies per a recència.</p>
+          <h3><span class="badge red">Error 1</span> Omplir nuls amb zero (Set. 1–2)</h3>
+          <p><strong>Problema:</strong> Posar <code>0</code> falsejava la despesa (<code>annual_spend</code>) i recència (<code>days_since_last_order</code>).</p>
+          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Càlcul (<code>avg_order_value</code> &times; <code>orders_last_12m</code>) i mediana de 44 dies.</p>
         </div>
 
         <div class="card danger">
-          <h3><span class="badge red">Error 2</span> Fuga de dades amb R² = 0,9999 (Setmana 3)</h3>
-          <p><strong>Què passava:</strong> Deixar columnes de tancament mensual (ingressos, estoc final, ruptura) donava una nota falsa perfecta.</p>
-          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Eliminació de tota dada posterior al dia 1, obtenint un R² = 0,85 real.</p>
+          <h3><span class="badge red">Error 2</span> Fuga de dades (Set. 3)</h3>
+          <p><strong>Problema:</strong> Columnes de tancament mensual donaven un R² fals de <code>0,9999</code>.</p>
+          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Només dades del dia 1 &rarr; R² real de <code>0,85</code>.</p>
         </div>
 
         <div class="card warn">
-          <h3><span class="badge amber">Error 3</span> Posar el canal i tiquet en K-Means (Setmana 4)</h3>
-          <p><strong>Què passava:</strong> Incloure el canal enfonsava la separació de grups (silueta de <code>0,35</code> a <code>0,28</code>) i el tiquet duplicava pes.</p>
-          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Només 4 variables pures de comportament; el canal s'usa després per a la campanya.</p>
+          <h3><span class="badge amber">Error 3</span> Canal i tiquet al K-Means (Set. 4)</h3>
+          <p><strong>Problema:</strong> <code>channel_preference</code> i <code>avg_order_value</code> barrejaven grups (silueta <code>0,35 &rarr; 0,28</code>).</p>
+          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Només 4 variables de comportament; el canal s'usa després en campanyes.</p>
         </div>
 
         <div class="card warn">
-          <h3><span class="badge amber">Error 4</span> Models complexos (SVR / KNN) (Setmana 3)</h3>
-          <p><strong>Què passava:</strong> Models complexos donaven molt pitjor error (32,8 u. i 23,1 u.) que una simple mitjana històrica (19,9 u.).</p>
-          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Regressió Lineal simple (13,62 u.), més precisa i fàcil d'explicar.</p>
+          <h3><span class="badge amber">Error 4</span> Models complexos SVR / KNN (Set. 3)</h3>
+          <p><strong>Problema:</strong> Pitjor error (32,8 u. i 23,1 u.) que la mitjana històrica (19,9 u.).</p>
+          <p style="margin-top: 8px; color: var(--primary);"><strong>Solució:</strong> Regressió Lineal simple (13,62 u.), més precisa i clara.</p>
         </div>
       </div>
     </section>
@@ -731,7 +731,7 @@
         <div class="card info">
           <span class="badge green">Confiança ALTA</span>
           <h3 style="margin-top: 10px;">3. Gestió de Clients</h3>
-          <p>Cuidar els VIP amb taller prioritari, venda creuada d'accessoris al 40% estàndard i guies de talles per frenar el 30% de devolucions.</p>
+          <p>Cuidar els VIP amb enviament gratuït i avantatges exclusius, oferir accessoris al 40% estàndard i guies de talles per frenar el 30% de devolucions.</p>
         </div>
       </div>
 
@@ -742,7 +742,7 @@
         </div>
         <div class="card">
           <h3>Millores Futures</h3>
-          <p>Automatitzar el càlcul mensual amb <strong>Docker</strong> per a actualitzar el panell cada mes, i mesurar amb campanyes reals de màrqueting si els cupons recuperen clients.</p>
+          <p>Connectar les vendes reals amb cada client per a seguir la seua evolució, i mesurar amb campanyes reals de màrqueting (tests A/B) si els cupons recuperen clients.</p>
         </div>
       </div>
     </section>
